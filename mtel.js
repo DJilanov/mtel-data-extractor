@@ -27,16 +27,16 @@ const fetchDay = (year, month, day) => {
                             egn: date + i,
                             ...body
                         }) + '\n');
-                        return;
-                    }
-                    if(body.response !== null) {
-                        console.log('RES: ', body.response);
-                        data_file.write(JSON.stringify(body.response) + '\n');
                     } else {
-                        tried_file.write(JSON.stringify({
-                            egn: date + i,
-                            ...body
-                        }) + '\n');
+                        if(body.response !== null) {
+                            console.log('RES: ', body.response);
+                            data_file.write(JSON.stringify(body.response) + '\n');
+                        } else {
+                            tried_file.write(JSON.stringify({
+                                egn: date + i,
+                                ...body
+                            }) + '\n');
+                        }
                     }
                     if(i === 9999) {
                         console.log('Finish date: ', date)
