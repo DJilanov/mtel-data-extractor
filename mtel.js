@@ -8,6 +8,7 @@ const fetchDay = (year, month, day) => {
     let date = '' + year + '' + (month > 9 ? month.toString() : ('0' + month)) + (day > 9 ? day.toString() : ('0' + day));
     const tried_file = fs.createWriteStream(__dirname + '/tried_logs/log_tried' + date + '.log', {flags : 'w'});
     const log_file = fs.createWriteStream(__dirname + '/debug_logs/log_debug' + date + '.log', {flags : 'w'});
+    const bad_egn_file = fs.createWriteStream(__dirname + '/bad_egn_logs/bad_egn_debug' + date + '.log', {flags : 'w'});
     date = date * 10000;
     console.log('Start date: ', date)
     for(let i = 0; i < 10000; i++) {
@@ -21,6 +22,13 @@ const fetchDay = (year, month, day) => {
             })
                 .then(res => res.json())
                 .then(body => {
+                    if(err.errorMessage === 'Невалидно ЕГН!') {
+                        bad_egn_file.write(JSON.stringify({
+                            egn: date + i,
+                            ...body
+                        }) + '\n');
+                        return;
+                    }
                     if(body.response !== null) {
                         console.log('RES: ', body.response);
                         data_file.write(JSON.stringify(body.response) + '\n');
@@ -48,9 +56,6 @@ const fetchDay = (year, month, day) => {
                         fetchDay(year, month, day);
                     }
                 }).catch(err => {
-                    if(err.errorMessage === 'Невалидно ЕГН!') {
-                        return;
-                    }
                     log_file.write(('Failed: ' +  (date + i) + ' ERR: ' + JSON.stringify(err)) + '\n');
                 });
         }, 3 * i);
