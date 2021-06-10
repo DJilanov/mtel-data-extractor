@@ -22,7 +22,7 @@ const fetchDay = (year, month, day) => {
             })
                 .then(res => res.json())
                 .then(body => {
-                    if(err.errorMessage === 'Невалидно ЕГН!') {
+                    if(body.errorMessage === 'Невалидно ЕГН!') {
                         bad_egn_file.write(JSON.stringify({
                             egn: date + i,
                             ...body
@@ -58,7 +58,7 @@ const fetchDay = (year, month, day) => {
                 }).catch(err => {
                     log_file.write(('Failed: ' +  (date + i) + ' ERR: ' + JSON.stringify(err)) + '\n');
                 });
-        }, 3 * i);
+        }, 5 * i);
     }
 }
 
